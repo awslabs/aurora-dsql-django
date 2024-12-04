@@ -89,7 +89,9 @@ $ pytest --cov=aurora_dsql_django aurora_dsql_django/tests/unit/ --cov-report=xm
 
 You can run the integration tests with this command:
 ```
-$ pytest tests/integration
+$ export CLUSTER_ENDPOINT=<your cluster endpoint>
+$ export DJANGO_SETTINGS_MODULE=aurora_dsql_django.tests.test_settings
+$ pytest -v aurora_dsql_django/tests/integration/
 ```
 
 ### Documentation 
