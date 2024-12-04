@@ -19,7 +19,7 @@ TODO: Update version here
       ```sh
       django
       psycopg[binary]
-      aurora_dsql_djang
+      aurora_dsql_django
       boto3>=1.35.74
       botocore>=1.35.74
       ```
@@ -189,7 +189,7 @@ To create associated tables in the Aurora DSQL cluster run following commands in
 ```sh
 # This will generate 0001_Initial.py in django_Aurora DSQL_example/project/pet_clinic directory
 python3 manage.py makemigrations pet_clinic
-python3 manage.py migrage pet_clinic 0001
+python3 manage.py migrate pet_clinic 0001
 ```
 
 ### Create Views
