@@ -2,8 +2,6 @@
 
 This is the adapter for enabling development of Django applications using Aurora DSQL.
 
-For getting started with the adapter, see [Django with Aurora DSQL](TODO).
-
 ## Requirements
 
 ### Boto3
@@ -60,7 +58,7 @@ is show below
     }
 ```
 
-For more info follow the [Aurora DSQL with Django user guide](TODO)
+For more info follow the [Aurora DSQL with Django example](examples/pet-clinic-app/README.md)
 
 ## Development
 
@@ -108,9 +106,7 @@ $ make html
 ## Getting Help
 
 Please use these community resources for getting help.
-* Ask a question on StackOverflow and tag it with the [aurora-dsql](TODO) tag.
 * Open a support ticket with [AWS Support](http://docs.aws.amazon.com/awssupport/latest/user/getting-started.html).
-* Make a new thread at [Aurora DSQL Forum](TODO).
 * If you think you may have found a bug, please open an [issue](https://github.com/awslabs/aurora-dsql-django/issues/new).
 
 ## Opening Issues
