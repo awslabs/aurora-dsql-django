@@ -4,7 +4,6 @@
 ### Pre-requisites
 - Provision a Aurora DSQL cluster and note the hostname
 - Python version >=3.8 must have been installed
-TODO: Update version here
 - aws-sdk for python version >=3.x.y
 
 ### Bootstrap Django app
