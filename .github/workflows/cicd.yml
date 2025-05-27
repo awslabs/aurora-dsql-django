@@ -53,11 +53,19 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
+    - name: verify secrets configuration
+      env:
+        CLUSTER_ENDPOINT: ${{ secrets.CLUSTER_ENDPOINT }}
+        DJANGO_ADAPTER_INTEGRATION_TEST_ROLE: ${{ secrets.DJANGO_ADAPTER_INTEGRATION_TEST_ROLE}}
+      run: |
+        echo "$CLUSTER_ENDPOINT"
+        echo "$DJANGO_ADAPTER_INTEGRATION_TEST_ROLE"
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.DJANGO_ADAPTER_INTEGRATION_TEST_ROLE }}
-        aws-region: us-east-1
+        aws-|<D-z>region: us-east-1
 
     - name: Setup venv
       run: |
