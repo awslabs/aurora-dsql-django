@@ -65,7 +65,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.DJANGO_ADAPTER_INTEGRATION_TEST_ROLE }}
-        aws-|<D-z>region: us-east-1
+        aws-region: us-east-1
 
     - name: Setup venv
       run: |
