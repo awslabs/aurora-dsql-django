@@ -11,8 +11,8 @@ class TestDatabaseSchemaEditor(unittest.TestCase):
         self.schema_editor = DatabaseSchemaEditor(self.connection)
 
     def test_sql_attributes(self):
-        self.assertEqual(self.schema_editor.sql_delete_fk, "")
-        self.assertEqual(self.schema_editor.sql_create_pk, "")
+        self.assertEqual(self.schema_editor.sql_delete_fk, "SELECT 'sql_delete_fk' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_create_pk, "SELECT 'sql_create_pk' WHERE FALSE")
         self.assertEqual(
             self.schema_editor.sql_delete_unique,
             "DROP INDEX %(name)s CASCADE")
@@ -20,12 +20,12 @@ class TestDatabaseSchemaEditor(unittest.TestCase):
             self.schema_editor.sql_update_with_default,
             "UPDATE %(table)s SET %(column)s = %(default)s WHERE %(column)s IS NULL"
         )
-        self.assertEqual(self.schema_editor.sql_create_unique, "")
-        self.assertEqual(self.schema_editor.sql_create_fk, "")
-        self.assertEqual(self.schema_editor.sql_create_check, "")
-        self.assertEqual(self.schema_editor.sql_delete_check, "")
-        self.assertEqual(self.schema_editor.sql_delete_constraint, "")
-        self.assertEqual(self.schema_editor.sql_delete_column, "")
+        self.assertEqual(self.schema_editor.sql_create_unique, "SELECT 'sql_create_unique' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_create_fk, "SELECT 'sql_create_fk' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_create_check, "SELECT 'sql_create_check' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_delete_check, "SELECT 'sql_delete_check' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_delete_constraint, "SELECT 'sql_delete_constraint' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_delete_column, "SELECT 'sql_delete_column' WHERE FALSE")
 
     @patch('aurora_dsql_django.schema.schema.DatabaseSchemaEditor.add_index')
     def test_add_index_with_expressions(self, mock_super_add_index):

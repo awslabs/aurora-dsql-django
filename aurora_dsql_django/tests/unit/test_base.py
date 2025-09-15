@@ -106,19 +106,17 @@ class TestAuroraDSQLBackend(unittest.TestCase):
 
     def test_database_wrapper_data_types(self):
         wrapper = DatabaseWrapper({})
-        self.assertEqual(wrapper.data_types['BigAutoField'], "uuid")
-        self.assertEqual(wrapper.data_types['AutoField'], "uuid")
         self.assertEqual(wrapper.data_types['DateTimeField'], "timestamptz")
 
     def test_database_wrapper_data_types_suffix(self):
         wrapper = DatabaseWrapper({})
         self.assertEqual(
             wrapper.data_types_suffix['BigAutoField'],
-            "DEFAULT gen_random_uuid()")
+            "")
         self.assertEqual(wrapper.data_types_suffix['SmallAutoField'], "")
         self.assertEqual(
             wrapper.data_types_suffix['AutoField'],
-            "DEFAULT gen_random_uuid()")
+            "")
 
     @patch('aurora_dsql_django.base.get_aws_connection_params')
     def test_database_wrapper_get_connection_params(self, mock_get_aws_params):

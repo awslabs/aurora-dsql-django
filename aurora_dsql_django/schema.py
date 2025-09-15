@@ -25,10 +25,11 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
     # The PostgreSQL backend uses "SET CONSTRAINTS ... IMMEDIATE" before
     # "ALTER TABLE..." to run any any deferred checks to allow dropping the
     # foreign key in the same transaction. This doesn't apply to Aurora DSQL.
-    sql_delete_fk = ""
+    # A zero row count no-op valid SQL query with source name (useful for debugging)
+    sql_delete_fk = "SELECT 'sql_delete_fk' WHERE FALSE" 
 
     # ALTER TABLE ADD CONSTRAINT PRIMARY KEY is not supported
-    sql_create_pk = ""
+    sql_create_pk = "SELECT 'sql_create_pk' WHERE FALSE"
 
     # "ALTER TABLE ... DROP CONSTRAINT ..." not supported for dropping UNIQUE
     # constraints; must use this instead.
@@ -40,18 +41,25 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
         "UPDATE %(table)s SET %(column)s = %(default)s WHERE %(column)s IS NULL"
     )
 
-    # ALTER TABLE ADD CONSTRAINT is not supported
-    sql_create_unique = ""
+    # ALTER TABLE ADD CONSTRAINT is not supported, but create unique index async works as an alternative 
+    sql_create_unique = "CREATE UNIQUE INDEX ASYNC %(name)s ON %(table)s (%(columns)s)"
 
     # ALTER TABLE ADD CONSTRAINT FOREIGN KEY is not supported
-    sql_create_fk = ""
+    sql_create_fk = "SELECT 'sql_create_fk' WHERE FALSE"
     # ALTER TABLE ADD CONSTRAINT CHECK is not supported
-    sql_create_check = ""
-    sql_delete_check = ""
+    sql_create_check = "SELECT 'sql_create_check' WHERE FALSE"
+    sql_delete_check = "SELECT 'sql_delete_check' WHERE FALSE"
     # ALTER TABLE DROP CONSTRAINT is not supported
-    sql_delete_constraint = ""
+    sql_delete_constraint = "SELECT 'sql_delete_constraint' WHERE FALSE"
     # ALTER TABLE DROP COLUMN is not supported
-    sql_delete_column = ""
+    sql_delete_column = "SELECT 'sql_delete_column' WHERE FALSE"
+
+    sql_create_index = (
+        "CREATE INDEX ASYNC %(name)s ON %(table)s%(using)s "
+        "(%(columns)s)%(include)s%(extra)s%(condition)s"
+    )
+
+    sql_alter_column = "SELECT 'sql_alter_column' WHERE FALSE"
 
     def __enter__(self):
         super().__enter__()

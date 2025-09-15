@@ -22,12 +22,6 @@ from django.db.backends.postgresql import operations
 
 class DatabaseOperations(operations.DatabaseOperations):
 
-    cast_data_types = {
-        "AutoField": "uuid",
-        "BigAutoField": "uuid",
-        "SmallAutoField": "smallint",
-    }
-
     def deferrable_sql(self):
         # Deferrable constraints aren't supported:
         return ""

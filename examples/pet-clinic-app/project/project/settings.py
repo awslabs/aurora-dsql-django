@@ -71,6 +71,7 @@ DATABASES = {
         'USER': 'admin',
         'NAME': 'postgres',
         'ENGINE': 'aurora_dsql_django',
+        'DISABLE_SERVER_SIDE_CURSORS': True,
         'OPTIONS': {
             'sslmode': 'require',
             'region': 'us-east-1'

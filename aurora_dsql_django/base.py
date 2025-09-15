@@ -29,6 +29,34 @@ from .features import DatabaseFeatures
 from .operations import DatabaseOperations
 from .schema import DatabaseSchemaEditor
 
+from uuid import uuid4
+
+from django.db.models.fields import (
+    AutoField,
+    BigAutoField,
+    Field,
+)
+
+def uuid_to_int32():
+    return uuid4().int & 0x7FFFFFFF
+
+def uuid_to_int64():
+    return uuid4().int & 0x7FFFFFFFFFFFFFFF
+
+def patch_autofield(field_class, generator):
+    def __init__(self, *args, **kwargs):
+        kwargs["blank"] = True
+        Field.__init__(self, *args, **kwargs)
+        self.default = generator
+    
+    field_class.__init__ = __init__
+    field_class.validators = []
+    field_class.db_returning = False
+
+# patch AutoFields to get default value from generator functions
+patch_autofield(AutoField, uuid_to_int32) 
+patch_autofield(BigAutoField, uuid_to_int64)
+
 logger = logging.getLogger(__name__)
 
 
@@ -93,16 +121,14 @@ class DatabaseWrapper(base.DatabaseWrapper):
     # Override some types from the postgresql adapter.
     data_types = dict(
         base.DatabaseWrapper.data_types,
-        BigAutoField="uuid",
-        AutoField="uuid",
         DateTimeField="timestamptz",
     )
     data_types_suffix = dict(
         base.DatabaseWrapper.data_types_suffix,
-        BigAutoField="DEFAULT gen_random_uuid()",
+        BigAutoField="", # Default value auto generated from gen_rand_int64
         # For now skipping small int because uuid does not fit in a smallint?
         SmallAutoField="",
-        AutoField="DEFAULT gen_random_uuid()",
+        AutoField="", # Default value auto generated from gen_rand_int32
     )
 
     SchemaEditorClass = DatabaseSchemaEditor
