@@ -20,7 +20,7 @@ class TestDatabaseSchemaEditor(unittest.TestCase):
             self.schema_editor.sql_update_with_default,
             "UPDATE %(table)s SET %(column)s = %(default)s WHERE %(column)s IS NULL"
         )
-        self.assertEqual(self.schema_editor.sql_create_unique, "SELECT 'sql_create_unique' WHERE FALSE")
+        self.assertEqual(self.schema_editor.sql_create_unique, "CREATE UNIQUE INDEX ASYNC %(name)s ON %(table)s (%(columns)s)")
         self.assertEqual(self.schema_editor.sql_create_fk, "SELECT 'sql_create_fk' WHERE FALSE")
         self.assertEqual(self.schema_editor.sql_create_check, "SELECT 'sql_create_check' WHERE FALSE")
         self.assertEqual(self.schema_editor.sql_delete_check, "SELECT 'sql_delete_check' WHERE FALSE")
