@@ -41,7 +41,8 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
         "UPDATE %(table)s SET %(column)s = %(default)s WHERE %(column)s IS NULL"
     )
 
-    # ALTER TABLE ADD CONSTRAINT is not supported, but create unique index async works as an alternative 
+    # ALTER TABLE ADD CONSTRAINT is not supported 
+    # The equivalent workaround is to create an unique index
     sql_create_unique = "CREATE UNIQUE INDEX ASYNC %(name)s ON %(table)s (%(columns)s)"
 
     # ALTER TABLE ADD CONSTRAINT FOREIGN KEY is not supported
