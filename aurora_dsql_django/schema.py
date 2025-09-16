@@ -49,18 +49,24 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
     sql_create_fk = "SELECT 'sql_create_fk' WHERE FALSE"
     # ALTER TABLE ADD CONSTRAINT CHECK is not supported
     sql_create_check = "SELECT 'sql_create_check' WHERE FALSE"
+    # ALTER TABLE DROP CONSTRAINT is not supported
     sql_delete_check = "SELECT 'sql_delete_check' WHERE FALSE"
     # ALTER TABLE DROP CONSTRAINT is not supported
     sql_delete_constraint = "SELECT 'sql_delete_constraint' WHERE FALSE"
+    # ALTER TABLE ADD COLUMN is not supported
+    sql_create_column = "SELECT 'sql_create_column' WHERE FALSE"
     # ALTER TABLE DROP COLUMN is not supported
     sql_delete_column = "SELECT 'sql_delete_column' WHERE FALSE"
+    # ALTER TABLE SET TABLESPACE is not supported  
+    sql_retablespace_table = "SELECT 'sql_retablespace_table' WHERE FALSE"
+    # ALTER TABLE ALTER COLUMN is not supported
+    sql_alter_column = "SELECT 'sql_alter_column' WHERE FALSE"
 
     sql_create_index = (
         "CREATE INDEX ASYNC %(name)s ON %(table)s%(using)s "
         "(%(columns)s)%(include)s%(extra)s%(condition)s"
     )
 
-    sql_alter_column = "SELECT 'sql_alter_column' WHERE FALSE"
 
     def __enter__(self):
         super().__enter__()
