@@ -125,10 +125,10 @@ class DatabaseWrapper(base.DatabaseWrapper):
     )
     data_types_suffix = dict(
         base.DatabaseWrapper.data_types_suffix,
-        BigAutoField="", # The default value is auto generated locally from gen_rand_int64 
+        BigAutoField="", # The default value is auto generated locally from uuid_to_int64 
         # For now skipping small int because uuid does not fit in a smallint?
         SmallAutoField="",
-        AutoField="", # The default value is auto generated locally from gen_rand_int32 
+        AutoField="", # The default value is auto generated locally from uuid_to_int32 
     )
 
     SchemaEditorClass = DatabaseSchemaEditor
