@@ -60,7 +60,7 @@ def patch_autofield(field_class, generator):
 databases = settings.DATABASES
 
 for db_name, db_config in databases.items():
-    if db_config.get("ENGINE") == "aurora_dsql_django" and db_config.get("ENABLE_ID_GENERATION_FOR_AUTO_FIELDS") == True : 
+    if db_config.get("ENGINE") == "aurora_dsql_django" and db_config.get("ENABLE_ID_GENERATION_FOR_AUTO_FIELDS") is True : 
         # patch AutoFields to get default value from generator functions
         patch_autofield(AutoField, uuid_to_int32) 
         patch_autofield(BigAutoField, uuid_to_int64)
