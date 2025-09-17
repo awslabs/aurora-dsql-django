@@ -14,7 +14,7 @@ Aurora DSQL Django adapter needs boto3 to work. Follow the Boto3 [installation g
 
 aurora_dsql_django requires Python 3.8 or later. 
 
-Please see the link below for more detail to install Python:
+Please see the link below for more details to install Python:
 
 * [Python Installation](https://www.python.org/downloads/)
 
@@ -34,7 +34,7 @@ First, install the adapter using pip:
 ### Define Aurora DSQL as the Engine for the Django App
 
 Change the ``DATABASES`` variable in ``settings.py`` of your Django app. An example
-is show below
+is shown below:
 
 ```python
    DATABASES = {
@@ -47,9 +47,9 @@ is show below
                 'sslmode': 'require',
                 'region': 'us-east-2',
                 # (optional) Defaults to 'default' profile if nothing is set
-                'aws_profile': 'user aws custom profile name' 
+                'aws_profile': 'user aws custom profile name',
                 # (optional) Default is 900 seconds i.e., 15 mins 
-                'expires_in': <token expiry time time in seconds> 
+                'expires_in': <token expiry time in seconds>,
                 # (optional) If sslmode is 'verify-full' then use sslrootcert
                 # variable to set the path to server root certificate
                 # If no path is provided, the adapter looks into system certs
@@ -66,7 +66,7 @@ For more info follow the [Aurora DSQL with Django example](examples/pet-clinic-a
 
 ### Setup
 
-Assuming that you have Python installed, set up your environment and installed the dependencies
+Assuming that you have Python installed, set up your environment and install the dependencies
 like this instead of the `pip install aurora-dsql-django` defined above:
 
 ```
@@ -107,9 +107,128 @@ $ make html
 
 ## Getting Help
 
-Please use these community resources for getting help.
+Please use these community resources for getting help:
 * Open a support ticket with [AWS Support](http://docs.aws.amazon.com/awssupport/latest/user/getting-started.html).
 * If you think you may have found a bug, please open an [issue](https://github.com/awslabs/aurora-dsql-django/issues/new).
+
+## Known Issues and Solutions
+
+### 1. When running migrations with the following Django Contrib Apps, you may encounter not-null constraint errors
+```
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions']
+```
+
+Error Message:
+
+```
+django.db.utils.IntegrityError: null value in column "name" of relation "django_content_type" violates not-null constraint
+```
+
+#### Solution: Allow null values for the following columns
+- ```name``` from the table ```django_content_type```
+    - Locate the installed django library in the site-packages folder (within the venv folder)
+    - Navigate to
+        ```
+        venv/lib/python3.13/site-packages/django/contrib/contenttypes/migrations/0001_initial.py
+        ```
+    - Modify the ```name``` field by adding ```null=True``` under ```migrations.CreateModel(name="ContentType")```  and save your change
+        ```
+        #0001_initial.py
+
+        # From
+        ("name", models.CharField(max_length=100)),
+        
+        # To
+        ("name", models.CharField(max_length=100, null=True)),
+        ```
+
+- ```last_login``` from the table ```auth_user```
+
+    - Navigate to
+        ```
+        venv/lib/python3.13/site-packages/django/contrib/auth/migrations/0001_initial.py
+        ```
+     - Modify the ```last_login``` field by adding ```null=True``` under ```migrations.CreateModel(name="User")``` and save your change
+
+        ```
+        # 0001_initial.py
+        
+        # From
+        (
+            "last_login",
+            models.DateTimeField(
+                default=timezone.now, verbose_name="last login"
+            ),
+        ),
+
+        # To   
+        (
+            "last_login",
+            models.DateTimeField(
+                default=timezone.now, verbose_name="last login", null=True
+            ),
+        ),
+        ```
+ 
+
+### 2. Null is used as the primary key during insertion for tables related to Django Contrib Apps 
+
+#### Solution: Ensure auto primary key generation is enabled 
+- Add the attribute ```'ENABLE_ID_GENERATION_FOR_AUTO_FIELDS': True``` to DATABASES
+- Ensure the ```DEFAULT_AUTO_FIELD``` in ```settings.py``` is set to either ```django.db.models.BigAutoField``` or ```django.db.models.AutoField``` 
+
+Note: This will automatically generate a default value for the AutoField and BigAutoField which can be used for the primary key. 
+    
+
+``` 
+#settings.py
+
+DATABASES = {
+    'default': {
+        'HOST': <HOST>,
+        'USER': <USER_NAME>,
+        'NAME': 'postgres',
+        'ENGINE': 'aurora_dsql_django',
+        'ENABLE_ID_GENERATION_FOR_AUTO_FIELDS': True,
+        'OPTIONS': {
+            'sslmode': 'verify-full',
+            'region': 'us-east-1'
+        }
+    }
+}
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+```
+
+
+### 3. DeclareCursor is not supported
+
+#### Solution: Disable Server Side Cursors
+- Add the attribute ```'DISABLE_SERVER_SIDE_CURSORS': True``` to DATABASES in ```settings.py```. Note: ```DISABLE_SERVER_SIDE_CURSORS``` should be at the same level as ```OPTIONS```, not within it
+```
+#settings.py
+
+DATABASES = {
+    'default': {
+        'HOST': <HOST>,
+        'USER': <USER_NAME>,
+        'NAME': 'postgres',
+        'ENGINE': 'aurora_dsql_django',
+        'DISABLE_SERVER_SIDE_CURSORS': True, # Fixes unsupported statement: DeclareCursor 
+        'OPTIONS': {
+            'sslmode': 'verify-full',
+            'region': 'us-east-1'
+        }
+    }
+}
+```
+
+
 
 ## Opening Issues
 
