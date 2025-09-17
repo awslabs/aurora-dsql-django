@@ -37,10 +37,14 @@ from django.db.models.fields import (
     Field,
 )
 
+from django.conf import settings
+
 def uuid_to_int32():
+    """Generate a positive 32-bit signed integer using UUID for distributed uniqueness across machines and processes."""
     return uuid4().int & 0x7FFFFFFF
 
 def uuid_to_int64():
+    """Generate a positive 64-bit signed integer using UUID for distributed uniqueness across machines and processes."""
     return uuid4().int & 0x7FFFFFFFFFFFFFFF
 
 def patch_autofield(field_class, generator):
@@ -53,9 +57,14 @@ def patch_autofield(field_class, generator):
     field_class.validators = []
     field_class.db_returning = False
 
-# patch AutoFields to get default value from generator functions
-patch_autofield(AutoField, uuid_to_int32) 
-patch_autofield(BigAutoField, uuid_to_int64)
+databases = settings.DATABASES
+
+for db_name, db_config in databases.items():
+    if db_config.get("ENGINE") == "aurora_dsql_django" and db_config.get("ENABLE_ID_GENERATION_FOR_AUTO_FIELDS") == True : 
+        # patch AutoFields to get default value from generator functions
+        patch_autofield(AutoField, uuid_to_int32) 
+        patch_autofield(BigAutoField, uuid_to_int64)
+        break
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,8 @@
 import unittest
 from aurora_dsql_django.features import DatabaseFeatures
-
+from django.db.models.fields import AutoField, BigAutoField
+from unittest.mock import patch, MagicMock
+from django.db.models.fields import NOT_PROVIDED
 
 class TestDatabaseFeatures(unittest.TestCase):
 
@@ -67,6 +69,39 @@ class TestDatabaseFeatures(unittest.TestCase):
             self.features.has_native_json_field,
             postgresql_features.has_native_json_field)
 
+class TestAutoFieldDefaults(unittest.TestCase):
+    
+    @patch('aurora_dsql_django.base.boto3.session.Session')
+    def setUp(self, _):
+        # Setup a mock session to trigger patch_autofield in base.py which checks 
+        # for the flag ENABLE_ID_GENERATION_FOR_AUTO_FIELDS to enable the feature"""
+        pass
+    
+    def test_autofield_generates_32bit_integers(self):
+        field = AutoField()
+        value = field.default()
+        
+        self.assertIsInstance(value, int)
+        self.assertGreaterEqual(value, 0)
+        self.assertLessEqual(value, 2147483647)  # Max 32-bit signed int
+    
+    def test_bigautofield_generates_64bit_integers(self):
+        field = BigAutoField()
+        value = field.default()
+        
+        self.assertIsInstance(value, int)
+        self.assertGreaterEqual(value, 0)
+        self.assertLessEqual(value, 9223372036854775807)  # Max 64-bit signed int
+    
+    def test_values_are_unique(self):
+        auto_field = AutoField()
+        big_field = BigAutoField()
+        
+        auto_values = [auto_field.default() for _ in range(10)]
+        big_values = [big_field.default() for _ in range(10)]
+        
+        self.assertEqual(len(auto_values), len(set(auto_values)))
+        self.assertEqual(len(big_values), len(set(big_values)))
 
 if __name__ == '__main__':
     unittest.main()

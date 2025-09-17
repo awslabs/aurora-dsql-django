@@ -13,6 +13,7 @@ DATABASES = {
         'NAME': 'postgres',
         'ENGINE': 'aurora_dsql_django',
         'PORT': '5432',
+        'ENABLE_ID_GENERATION_FOR_AUTO_FIELDS': True, # Enable auto ID generation for AutoField and BigAutoField
         'OPTIONS': {
                 'sslmode': 'verify-full',
                 'region': 'us-east-1',

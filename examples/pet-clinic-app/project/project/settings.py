@@ -38,9 +38,22 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-INSTALLED_APPS = ['pet_clinic']
+INSTALLED_APPS = ['pet_clinic', "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles"]
 
-MIDDLEWARE = []
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware', 
+    'django.contrib.messages.middleware.MessageMiddleware', 
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+]
 
 ROOT_URLCONF = 'project.urls'
 
@@ -53,6 +66,8 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',  
+                'django.contrib.messages.context_processors.messages', 
             ],
         },
     },
@@ -67,11 +82,12 @@ SECRET_KEY = 'foobar_this_is_not_relevant_and_unused'  # nosec
 
 DATABASES = {
     'default': {
-        'HOST': 'luabttng4i6jdbng53eorltjc4.dsql-gamma.us-east-1.on.aws',
+        'HOST': 'kyabt2b7a44xpg6sbo4d5carqi.dsql.us-east-1.on.aws',
         'USER': 'admin',
         'NAME': 'postgres',
         'ENGINE': 'aurora_dsql_django',
         'DISABLE_SERVER_SIDE_CURSORS': True, # Fixes unsupported statement: DeclareCursor 
+        'ENABLE_ID_GENERATION_FOR_AUTO_FIELDS': True, # Enable auto ID generation for AutoField and BigAutoField
         'OPTIONS': {
             'sslmode': 'require',
             'region': 'us-east-1'
