@@ -130,49 +130,22 @@ django.db.utils.IntegrityError: null value in column "name" of relation "django_
 
 #### Solution: Allow null values for the following columns
 - ```name``` from the table ```django_content_type```
-    - Locate the installed django library in the site-packages folder (within the venv folder)
-    - Navigate to
-        ```
-        venv/lib/python3.13/site-packages/django/contrib/contenttypes/migrations/0001_initial.py
-        ```
-    - Modify the ```name``` field by adding ```null=True``` under ```migrations.CreateModel(name="ContentType")```  and save your change
-        ```
-        #0001_initial.py
-
-        # From
-        ("name", models.CharField(max_length=100)),
+    - connect to your DSQL cluster via ```psql```
+    - execute the following queries:
+        ``` sql
+        DROP TABLE IF EXISTS "django_content_type";
         
-        # To
-        ("name", models.CharField(max_length=100, null=True)),
+        CREATE TABLE "django_content_type" ("id" integer NOT NULL PRIMARY KEY, "name" varchar(100), "app_label" varchar(100) NOT NULL, "model" varchar(100) NOT NULL);
         ```
 
 - ```last_login``` from the table ```auth_user```
+    - execute the following queries: 
+        ``` sql
+        DROP TABLE IF EXISTS "auth_user";
 
-    - Navigate to
+        CREATE TABLE "auth_user" ("id" integer NOT NULL PRIMARY KEY, "password" varchar(128) NOT NULL, "last_login" timestamptz, "is_superuser" boolean NOT NULL, "username" varchar(150) NOT NULL UNIQUE, "first_name" varchar(150) NOT NULL, "last_name" varchar(150) NOT NULL, "email" varchar(254) NOT NULL, "is_staff" boolean NOT NULL, "is_active" boolean NOT NULL, "date_joined" timestamptz NOT NULL);
         ```
-        venv/lib/python3.13/site-packages/django/contrib/auth/migrations/0001_initial.py
-        ```
-     - Modify the ```last_login``` field by adding ```null=True``` under ```migrations.CreateModel(name="User")``` and save your change
-
-        ```
-        # 0001_initial.py
-        
-        # From
-        (
-            "last_login",
-            models.DateTimeField(
-                default=timezone.now, verbose_name="last login"
-            ),
-        ),
-
-        # To   
-        (
-            "last_login",
-            models.DateTimeField(
-                default=timezone.now, verbose_name="last login", null=True
-            ),
-        ),
-        ```
+    - Run ```python manage.py migrate``` again. The errors should be resolved. 
  
 
 ### 2. Null is used as the primary key during insertion for tables related to Django Contrib Apps 
