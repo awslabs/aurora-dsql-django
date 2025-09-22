@@ -49,8 +49,6 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
 
     # These "ALTER TABLE" operations are not supported.
     sql_create_pk = ""
-    sql_create_check = ""
-    sql_delete_check = ""
     sql_delete_constraint = ""
     sql_delete_column = ""
 
@@ -67,12 +65,19 @@ class DatabaseSchemaEditor(schema.DatabaseSchemaEditor):
     def add_index(self, model, index, concurrently=False):
         if index.contains_expressions and not self.connection.features.supports_expression_indexes:
             return None
-        super().add_index(model, index, concurrently)
+        return super().add_index(model, index, concurrently)
 
     def remove_index(self, model, index, concurrently=False):
         if index.contains_expressions and not self.connection.features.supports_expression_indexes:
             return None
-        super().remove_index(model, index, concurrently)
+        return super().remove_index(model, index, concurrently)
+
+    def _check_sql(self, name, check):
+        # There is no feature check in the upstream implementation when creating
+        # a model, so we add our own check.
+        if not self.connection.features.supports_table_check_constraints:
+            return None
+        return super()._check_sql(name, check)
 
     def _index_columns(self, table, columns, col_suffixes, opclasses):
         # Aurora DSQL doesn't support PostgreSQL opclasses.
