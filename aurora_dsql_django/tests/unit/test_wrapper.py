@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import django
 from django.conf import settings
 from django.db import models
-from django.db.models import CheckConstraint, Q, Index, F
+from django.db.models import CheckConstraint, Q, Index
 from django.db.models.functions import Upper
 from aurora_dsql_django.base import DatabaseWrapper
 from aurora_dsql_django.features import DatabaseFeatures
