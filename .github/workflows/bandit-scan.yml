@@ -40,4 +40,4 @@ jobs:
     - name: Run Bandit
       run: |
         uv add bandit
-        uv run bandit -r . -f custom --msg-template "{abspath}:{line}: {severity}: {test_id}: {msg}"
+        uv run bandit -r . -f custom --msg-template "{abspath}:{line}: {severity}: {test_id}: {msg}" --exclude ./.venv
