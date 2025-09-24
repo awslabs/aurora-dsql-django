@@ -22,7 +22,9 @@ import logging
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
+from django.db import models
 from django.db.backends.postgresql import base
+from django.db.models.fields import Field
 
 from .creation import DatabaseCreation
 from .features import DatabaseFeatures
@@ -104,6 +106,28 @@ class DatabaseWrapper(base.DatabaseWrapper):
         SmallAutoField="",
         AutoField="DEFAULT gen_random_uuid()",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._patch_autofields()
+
+    def _patch_autofields(self):
+        """
+        Patch AutoField classes to return UUID type for related fields.
+        This ensures ForeignKey fields that reference AutoFields are also UUIDs.
+        """
+
+        def uuid_rel_db_type(self, connection):
+            return "uuid"
+
+        def uuid_get_prep_value(self, value):
+            """Override get_prep_value to prevent int() conversion of UUIDs."""
+            return Field.get_prep_value(self, value)
+
+        models.AutoField.rel_db_type = uuid_rel_db_type
+        models.AutoField.get_prep_value = uuid_get_prep_value
+        models.BigAutoField.rel_db_type = uuid_rel_db_type
+        models.BigAutoField.get_prep_value = uuid_get_prep_value
 
     SchemaEditorClass = DatabaseSchemaEditor
     creation_class = DatabaseCreation

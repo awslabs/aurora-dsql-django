@@ -1,7 +1,12 @@
 import unittest
+import uuid
 from unittest.mock import patch, MagicMock
-from aurora_dsql_django.base import get_aws_connection_params, DatabaseWrapper
+
 from botocore.exceptions import BotoCoreError
+from django.db import models
+
+from aurora_dsql_django.base import get_aws_connection_params, DatabaseWrapper
+from aurora_dsql_django.operations import DatabaseOperations
 
 
 class TestAuroraDSQLBackend(unittest.TestCase):
@@ -13,6 +18,9 @@ class TestAuroraDSQLBackend(unittest.TestCase):
             "user": "test-user",
             "name": "test-db"
         }
+
+        self.wrapper = DatabaseWrapper({})
+        self.ops = DatabaseOperations(connection=MagicMock())
 
     @patch('aurora_dsql_django.base.boto3.session.Session')
     def test_get_aws_connection_params_without_profile(self, mock_session):
@@ -105,19 +113,17 @@ class TestAuroraDSQLBackend(unittest.TestCase):
             get_aws_connection_params(self.base_params.copy())
 
     def test_database_wrapper_data_types(self):
-        wrapper = DatabaseWrapper({})
-        self.assertEqual(wrapper.data_types['BigAutoField'], "uuid")
-        self.assertEqual(wrapper.data_types['AutoField'], "uuid")
-        self.assertEqual(wrapper.data_types['DateTimeField'], "timestamptz")
+        self.assertEqual(self.wrapper.data_types['BigAutoField'], "uuid")
+        self.assertEqual(self.wrapper.data_types['AutoField'], "uuid")
+        self.assertEqual(self.wrapper.data_types['DateTimeField'], "timestamptz")
 
     def test_database_wrapper_data_types_suffix(self):
-        wrapper = DatabaseWrapper({})
         self.assertEqual(
-            wrapper.data_types_suffix['BigAutoField'],
+            self.wrapper.data_types_suffix['BigAutoField'],
             "DEFAULT gen_random_uuid()")
-        self.assertEqual(wrapper.data_types_suffix['SmallAutoField'], "")
+        self.assertEqual(self.wrapper.data_types_suffix['SmallAutoField'], "")
         self.assertEqual(
-            wrapper.data_types_suffix['AutoField'],
+            self.wrapper.data_types_suffix['AutoField'],
             "DEFAULT gen_random_uuid()")
 
     @patch('aurora_dsql_django.base.get_aws_connection_params')
@@ -164,6 +170,34 @@ class TestAuroraDSQLBackend(unittest.TestCase):
         with wrapper.constraint_checks_disabled():
             # This context manager should not raise any exception
             pass
+
+    def test_autofield_rel_db_type_returns_uuid(self):
+        """Test that AutoField rel_db_type returns uuid for foreign keys."""
+        autofield = models.AutoField()
+        bigautofield = models.BigAutoField()
+
+        self.assertEqual(autofield.rel_db_type(self.wrapper), 'uuid')
+        self.assertEqual(bigautofield.rel_db_type(self.wrapper), 'uuid')
+
+    def test_autofield_get_prep_value_preserves_uuid(self):
+        """Test that AutoField get_prep_value doesn't convert UUIDs to int."""
+        autofield = models.AutoField()
+        bigautofield = models.BigAutoField()
+
+        test_uuid = uuid.uuid4()
+
+        # Should preserve UUID values.
+        self.assertEqual(autofield.get_prep_value(test_uuid), test_uuid)
+        self.assertEqual(bigautofield.get_prep_value(test_uuid), test_uuid)
+
+        # Should preserve None, which tells Django to use database default.
+        self.assertIsNone(autofield.get_prep_value(None))
+        self.assertIsNone(bigautofield.get_prep_value(None))
+
+    def test_operations_cast_data_types(self):
+        """Test that operations class maps AutoFields to uuid for casting."""
+        self.assertEqual(self.ops.cast_data_types['AutoField'], 'uuid')
+        self.assertEqual(self.ops.cast_data_types['BigAutoField'], 'uuid')
 
 
 if __name__ == '__main__':
