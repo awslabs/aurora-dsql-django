@@ -19,9 +19,10 @@ N seconds. This module extends the base wrapper to handle this case.
 """
 
 import logging
+import uuid
+
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
-
 from django.db import models
 from django.db.backends.postgresql import base
 from django.db.models.fields import Field
@@ -124,10 +125,24 @@ class DatabaseWrapper(base.DatabaseWrapper):
             """Override get_prep_value to prevent int() conversion of UUIDs."""
             return Field.get_prep_value(self, value)
 
+        def uuid_to_python(self, value):
+            """Convert UUID strings to UUID objects, handle both UUIDs and integers gracefully."""
+            if value is None:
+                return value
+            if isinstance(value, str):
+                try:
+                    return uuid.UUID(value)
+                except ValueError:
+                    # If it's not a valid UUID, treat it as the original field would.
+                    return Field.to_python(self, value)
+            return value
+
         models.AutoField.rel_db_type = uuid_rel_db_type
         models.AutoField.get_prep_value = uuid_get_prep_value
+        models.AutoField.to_python = uuid_to_python
         models.BigAutoField.rel_db_type = uuid_rel_db_type
         models.BigAutoField.get_prep_value = uuid_get_prep_value
+        models.BigAutoField.to_python = uuid_to_python
 
     SchemaEditorClass = DatabaseSchemaEditor
     creation_class = DatabaseCreation

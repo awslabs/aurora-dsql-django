@@ -199,6 +199,60 @@ class TestAuroraDSQLBackend(unittest.TestCase):
         self.assertEqual(self.ops.cast_data_types['AutoField'], 'uuid')
         self.assertEqual(self.ops.cast_data_types['BigAutoField'], 'uuid')
 
+    def test_autofield_to_python_uuid_conversion(self):
+        """Test that AutoField.to_python converts UUID strings to UUID objects."""
+        autofield = models.AutoField()
+        bigautofield = models.BigAutoField()
+
+        # Test with valid UUID string.
+        uuid_string = "8fcc0dd2-1d96-4428-a619-f0e43996dc19"
+        
+        result_auto = autofield.to_python(uuid_string)
+        result_big = bigautofield.to_python(uuid_string)
+        
+        # Should convert to UUID objects.
+        self.assertIsInstance(result_auto, uuid.UUID)
+        self.assertIsInstance(result_big, uuid.UUID)
+        self.assertEqual(str(result_auto), uuid_string)
+        self.assertEqual(str(result_big), uuid_string)
+
+    def test_autofield_to_python_with_uuid_object(self):
+        """Test that AutoField.to_python handles existing UUID objects."""
+        autofield = models.AutoField()
+        bigautofield = models.BigAutoField()
+        
+        uuid_obj = uuid.UUID("8fcc0dd2-1d96-4428-a619-f0e43996dc19")
+        result_auto = autofield.to_python(uuid_obj)
+        result_big = bigautofield.to_python(uuid_obj)
+        
+        self.assertEqual(result_auto, uuid_obj)
+        self.assertEqual(result_big, uuid_obj)
+
+    def test_autofield_to_python_with_none(self):
+        """Test that AutoField.to_python handles None values."""
+        autofield = models.AutoField()
+        bigautofield = models.BigAutoField()
+        
+        result_auto = autofield.to_python(None)
+        result_big = bigautofield.to_python(None)
+        
+        self.assertIsNone(result_auto)
+        self.assertIsNone(result_big)
+
+    def test_autofield_to_python_invalid_uuid_fallback(self):
+        """Test that AutoField.to_python falls back gracefully for invalid UUIDs."""
+        autofield = models.AutoField()
+        bigautofield = models.BigAutoField()
+        
+        invalid_uuid_string = "not-a-uuid"
+        
+        result_auto = autofield.to_python(invalid_uuid_string)
+        result_big = bigautofield.to_python(invalid_uuid_string)
+        
+        # Should return the original value when UUID conversion fails.
+        self.assertEqual(result_auto, invalid_uuid_string)
+        self.assertEqual(result_big, invalid_uuid_string)
+
 
 if __name__ == '__main__':
     unittest.main()
