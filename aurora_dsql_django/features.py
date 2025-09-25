@@ -54,6 +54,7 @@ class DatabaseFeatures(features.DatabaseFeatures):
     # Can the database introspect materialized views?
     can_introspect_materialized_views = False
 
+    # Can the database rename an index?
     can_rename_index = True
 
     supports_expression_indexes = False
