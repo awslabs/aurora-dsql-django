@@ -1,10 +1,10 @@
-# Aurora DSQL Django Adapter Behavior
+# Behavior of Aurora DSQL Adapter for Django
 
-This document describes how the Aurora DSQL Django adapter modifies standard Django behavior to work with the features provided by Aurora DSQL.
+This document describes how the Aurora DSQL adapter for Django modifies standard Django behavior to work with the features provided by Aurora DSQL.
 
 ## AutoField uses UUID instead of integers
 
-**Behavior:** The Aurora DSQL adapter automatically converts Django's `AutoField` and `BigAutoField` to use UUID primary keys instead of auto-incrementing integers.
+**Behavior:** The Aurora DSQL adapter for Django automatically converts Django's `AutoField` and `BigAutoField` to use UUID primary keys instead of auto-incrementing integers.
 
 **Impact:** 
 - All primary keys will be UUIDs (e.g. `8fcc0dd2-1d96-4428-a619-f0e43996dc19`) instead of integers (e.g. `1`, `2`, `3`)
@@ -17,7 +17,7 @@ This document describes how the Aurora DSQL Django adapter modifies standard Dja
 
 ## Server-side cursors automatically disabled
 
-**Behavior:** The Aurora DSQL adapter automatically sets `DISABLE_SERVER_SIDE_CURSORS = True` for database connections unless otherwise configured.
+**Behavior:** The Aurora DSQL adapter for Django automatically sets `DISABLE_SERVER_SIDE_CURSORS = True` for database connections unless otherwise configured.
 
 **Impact:** Large querysets will load entirely into memory instead of streaming, which may affect memory usage for large datasets.
 
@@ -25,7 +25,7 @@ This document describes how the Aurora DSQL Django adapter modifies standard Dja
 
 ## Foreign key constraints are skipped during migrations
 
-**Behavior:** The Aurora DSQL adapter automatically skips foreign key constraint creation and removal operations during migrations.
+**Behavior:** The Aurora DSQL adapter for Django automatically skips foreign key constraint creation and removal operations during migrations.
 
 **Impact:** 
 - Foreign key constraints are not enforced at the database level
@@ -36,7 +36,7 @@ This document describes how the Aurora DSQL Django adapter modifies standard Dja
 
 ## Check constraints are skipped during migrations
 
-**Behavior:** The Aurora DSQL adapter automatically skips check constraint creation and removal operations during migrations.
+**Behavior:** The Aurora DSQL adapter for Django automatically skips check constraint creation and removal operations during migrations.
 
 **Impact:**
 - Check constraints are not enforced at the database level
@@ -47,7 +47,7 @@ This document describes how the Aurora DSQL Django adapter modifies standard Dja
 
 ## Expression indexes are skipped during migrations
 
-**Behavior:** The Aurora DSQL adapter automatically skips creation and removal of expression indexes during migrations.
+**Behavior:** The Aurora DSQL adapter for Django automatically skips creation and removal of expression indexes during migrations.
 
 **Impact:**
 - Expression indexes (e.g., `Index(Upper('name'))`) are not created during migration operations

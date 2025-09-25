@@ -64,7 +64,7 @@ For more info follow the [Aurora DSQL with Django example](examples/pet-clinic-a
 
 ## Documentation
 
-- **[Adapter Behavior](reference/ADAPTER_BEHAVIOR.md)** - How the adapter modifies Django behavior for Aurora DSQL compatibility
+- **[Adapter Behavior](reference/ADAPTER_BEHAVIOR.md)** - How the Aurora DSQL adapter for Django modifies Django behavior for Aurora DSQL compatibility
 - **[Known Issues](reference/KNOWN_ISSUES.md)** - Known limitations and workarounds
 
 ## Development

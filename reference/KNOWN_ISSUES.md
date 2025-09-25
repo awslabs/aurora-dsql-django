@@ -1,6 +1,6 @@
 # Known Issues
 
-This document tracks known issues and workarounds when using the Aurora DSQL Django adapter.
+This document tracks known issues and workarounds when using the Aurora DSQL adapter for Django.
 
 ## Framework Issues
 
@@ -28,7 +28,8 @@ DATABASES = {
 }
 ```
 
-This configuration is the default when using the adapter, so removing any existing `DISABLE_SERVER_SIDE_CURSORS`
+This configuration is the default when using the Aurora DSQL adapter for Django, so removing any existing
+`DISABLE_SERVER_SIDE_CURSORS`
 configuration should configure the correct behavior.
 
 ### Django Sites Framework not supported
@@ -40,7 +41,7 @@ django.db.utils.ProgrammingError: operator does not exist: uuid = integer
 LINE 1: ...le.com', "name" = 'example.com' WHERE "django_site"."id" = 1
 ```
 
-**Root Cause:** The Aurora DSQL adapter uses UUID for `AutoField`, but Django's sites framework hardcodes
+**Root Cause:** The Aurora DSQL adapter for Django uses UUID for `AutoField`, but Django's sites framework hardcodes
 `SITE_ID = 1` (integer) and expects integer primary keys.
 
 **Workaround:** Remove `django.contrib.sites` from `INSTALLED_APPS` and avoid its use.
