@@ -7,6 +7,7 @@ from django.db.models import CheckConstraint, Q
 from aurora_dsql_django.base import DatabaseWrapper
 from aurora_dsql_django.features import DatabaseFeatures
 from aurora_dsql_django.schema import DatabaseSchemaEditor
+from aurora_dsql_django.tests.utils import create_check_constraint
 
 if not settings.configured:
     settings.configure(
@@ -87,7 +88,7 @@ class TestWrapper(unittest.TestCase):
             class Meta:
                 app_label = 'test_app'
                 constraints = [
-                    CheckConstraint(condition=Q(age__gte=0), name='age_gte_0')
+                    create_check_constraint(Q(age__gte=0), 'age_gte_0')
                 ]
 
         def operation():
@@ -109,7 +110,7 @@ class TestWrapper(unittest.TestCase):
             class Meta:
                 app_label = 'test_app'
 
-        constraint = CheckConstraint(condition=Q(age__gte=0), name='age_gte_0')
+        constraint = create_check_constraint(Q(age__gte=0), 'age_gte_0')
 
         def operation():
             self.schema_editor.add_constraint(AddCheckConstraintModel, constraint)
@@ -129,7 +130,7 @@ class TestWrapper(unittest.TestCase):
             class Meta:
                 app_label = 'test_app'
 
-        constraint = CheckConstraint(condition=Q(age__gte=0), name='age_gte_0')
+        constraint = create_check_constraint(Q(age__gte=0), 'age_gte_0')
 
         def operation():
             self.schema_editor.remove_constraint(RemoveCheckConstraintModel, constraint)
