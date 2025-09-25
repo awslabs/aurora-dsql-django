@@ -3,12 +3,6 @@ name: Release
 on:
   release:
     types: [ published ]
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Tag name to simulate'
-        required: true
-        default: 'v0.0.0'
 
 permissions:
   contents: write
