@@ -21,6 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
+[project.urls]
+Repository = "https://github.com/awslabs/aurora-dsql-django"
+
 [project.optional-dependencies]
 test = [
     "pytest>=8",
