@@ -8,7 +8,7 @@ This document describes how the Aurora DSQL adapter for Django modifies standard
 
 **Impact:** 
 - All primary keys will be UUIDs (e.g. `8fcc0dd2-1d96-4428-a619-f0e43996dc19`) instead of integers (e.g. `1`, `2`, `3`)
-- Sort order of primary keys is not predictable
+- Sort order may not match insertion order
 - URLs, session data, etc. may contain UUID strings
 
 **Why this is necessary:** Aurora DSQL does not support auto-incrementing sequences. UUID primary keys are recommended.
@@ -30,20 +30,20 @@ This document describes how the Aurora DSQL adapter for Django modifies standard
 **Impact:** 
 - Foreign key constraints are not enforced at the database level
 - Applications must maintain referential integrity through Django model validation and application logic
-- Existing migrations from non-DSQL databases will continue to work without modification
+- Existing migrations from other databases will continue to work without modification
 
 **Why this is necessary:** Aurora DSQL does not support foreign key constraints. This approach maintains compatibility with existing Django migrations while preventing constraint-related errors.
 
-## Check constraints are skipped during migrations
+## Check constraint changes after table creation are skipped during migrations
 
-**Behavior:** The Aurora DSQL adapter for Django automatically skips check constraint creation and removal operations during migrations.
+**Behavior:** The Aurora DSQL adapter for Django automatically skips check constraints that are added to or removed from existing tables during migrations.
 
 **Impact:**
-- Check constraints are not enforced at the database level
-- Applications must maintain data validation through Django model validation and application logic
-- Existing migrations from non-DSQL databases will continue to work without modification
+- Check constraint modifications on existing tables are not applied at the database level, meaning constraints may remain unenforced or continue being enforced based on their previous state
+- Applications must rely on Django model validation and application logic for data integrity when check constraints are not defined at table creation
+- Existing migrations from other databases will continue to work without modification
 
-**Why this is necessary:** Aurora DSQL does not support table check constraints. This approach maintains compatibility with existing Django migrations while preventing constraint-related errors.
+**Why this is necessary:** Aurora DSQL supports table check constraints only if defined when the table is created. Django migrations can attempt to modify check constraints after table creation, which is not supported by Aurora DSQL. This approach maintains compatibility with existing Django migrations while preventing constraint-related errors.
 
 ## Expression indexes are skipped during migrations
 
