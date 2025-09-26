@@ -62,7 +62,7 @@ is show below
 
 For more info follow the [Aurora DSQL with Django example](examples/pet-clinic-app/README.md)
 
-## Documentation
+## Features and Limitations
 
 - **[Adapter Behavior](reference/ADAPTER_BEHAVIOR.md)** - How the Aurora DSQL adapter for Django modifies Django behavior for Aurora DSQL compatibility
 - **[Known Issues](reference/KNOWN_ISSUES.md)** - Known limitations and workarounds
