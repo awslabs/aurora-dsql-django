@@ -2,12 +2,21 @@ import unittest
 import uuid
 from unittest.mock import patch, MagicMock
 
+import django
+from django.conf import settings
 from botocore.exceptions import BotoCoreError
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from aurora_dsql_django.base import get_aws_connection_params, DatabaseWrapper
 from aurora_dsql_django.operations import DatabaseOperations
+
+if not settings.configured:
+    settings.configure(
+        USE_I18N=True,
+        DATABASES={'default': {'ENGINE': 'aurora_dsql_django'}},
+    )
+    django.setup()
 
 
 class TestAuroraDSQLBackend(unittest.TestCase):
@@ -259,6 +268,17 @@ class TestAuroraDSQLBackend(unittest.TestCase):
 
         with self.assertRaises(ValidationError):
             autofield.to_python(123)
+
+    def test_autofield_error_message_content(self):
+        """Test that AutoField validation errors contain correct UUID message."""
+        autofield = models.AutoField()
+        
+        with self.assertRaises(ValidationError) as cm:
+            autofield.to_python(123)
+        
+        error_message = str(cm.exception.messages[0])
+        self.assertIn("must be a valid UUID", error_message)
+        self.assertIn("123", error_message)
 
 
 if __name__ == '__main__':

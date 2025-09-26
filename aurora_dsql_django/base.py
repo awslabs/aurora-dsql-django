@@ -27,6 +27,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.backends.postgresql import base
 from django.db.models.fields import Field
+from django.utils.translation import gettext_lazy
 
 from .creation import DatabaseCreation
 from .features import DatabaseFeatures
@@ -142,12 +143,13 @@ class DatabaseWrapper(base.DatabaseWrapper):
                 params={"value": value},
             )
 
-        models.AutoField.rel_db_type = uuid_rel_db_type
-        models.AutoField.get_prep_value = uuid_get_prep_value
-        models.AutoField.to_python = uuid_to_python
-        models.BigAutoField.rel_db_type = uuid_rel_db_type
-        models.BigAutoField.get_prep_value = uuid_get_prep_value
-        models.BigAutoField.to_python = uuid_to_python
+        for field_class in [models.AutoField, models.BigAutoField]:
+            field_class.rel_db_type = uuid_rel_db_type
+            field_class.get_prep_value = uuid_get_prep_value
+            field_class.to_python = uuid_to_python
+            field_class.default_error_messages = {
+                "invalid": gettext_lazy("'%(value)s' value must be a valid UUID."),
+            }
 
     SchemaEditorClass = DatabaseSchemaEditor
     creation_class = DatabaseCreation
