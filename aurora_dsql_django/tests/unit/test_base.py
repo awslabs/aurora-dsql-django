@@ -3,6 +3,7 @@ import uuid
 from unittest.mock import patch, MagicMock
 
 from botocore.exceptions import BotoCoreError
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from aurora_dsql_django.base import get_aws_connection_params, DatabaseWrapper
@@ -239,19 +240,25 @@ class TestAuroraDSQLBackend(unittest.TestCase):
         self.assertIsNone(result_auto)
         self.assertIsNone(result_big)
 
-    def test_autofield_to_python_invalid_uuid_fallback(self):
-        """Test that AutoField.to_python falls back gracefully for invalid UUIDs."""
+    def test_autofield_to_python_invalid_uuid_error(self):
+        """Test that AutoField.to_python raises ValidationError for invalid UUIDs."""
         autofield = models.AutoField()
         bigautofield = models.BigAutoField()
-        
+
         invalid_uuid_string = "not-a-uuid"
-        
-        result_auto = autofield.to_python(invalid_uuid_string)
-        result_big = bigautofield.to_python(invalid_uuid_string)
-        
-        # Should return the original value when UUID conversion fails.
-        self.assertEqual(result_auto, invalid_uuid_string)
-        self.assertEqual(result_big, invalid_uuid_string)
+
+        with self.assertRaises(ValidationError):
+            autofield.to_python(invalid_uuid_string)
+
+        with self.assertRaises(ValidationError):
+            bigautofield.to_python(invalid_uuid_string)
+
+    def test_autofield_to_python_non_uuid_type_error(self):
+        """Test that AutoField.to_python raises ValidationError for non-uuid-compatible types."""
+        autofield = models.AutoField()
+
+        with self.assertRaises(ValidationError):
+            autofield.to_python(123)
 
 
 if __name__ == '__main__':

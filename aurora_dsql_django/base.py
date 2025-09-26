@@ -23,6 +23,7 @@ import uuid
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.backends.postgresql import base
 from django.db.models.fields import Field
@@ -126,16 +127,20 @@ class DatabaseWrapper(base.DatabaseWrapper):
             return Field.get_prep_value(self, value)
 
         def uuid_to_python(self, value):
-            """Convert UUID strings to UUID objects, handle both UUIDs and integers gracefully."""
-            if value is None:
+            """Convert provided value to a UUID where possible."""
+            if value is None or isinstance(value, uuid.UUID):
                 return value
             if isinstance(value, str):
                 try:
                     return uuid.UUID(value)
                 except ValueError:
-                    # If it's not a valid UUID, treat it as the original field would.
-                    return Field.to_python(self, value)
-            return value
+                    pass
+
+            raise ValidationError(
+                self.error_messages["invalid"],
+                code="invalid",
+                params={"value": value},
+            )
 
         models.AutoField.rel_db_type = uuid_rel_db_type
         models.AutoField.get_prep_value = uuid_get_prep_value
