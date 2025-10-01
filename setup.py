@@ -32,7 +32,4 @@ long_description = re.sub(
     readme_content,
 )
 
-setup(
-    long_description=long_description,
-    long_description_content_type="text/markdown"
-)
+setup(long_description=long_description, long_description_content_type="text/markdown")
