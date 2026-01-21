@@ -27,17 +27,18 @@ Repository = "https://github.com/awslabs/aurora-dsql-django"
 
 [dependency-groups]
 dev = [
-    "pytest>=8",
+    "bandit>=1.9.3",
     "django>=4.2",
-    "wheel",
-    "psycopg2-binary",
-    "psycopg",
-    "pytest-cov",
     "flake8",
-    "ruff",
     "pip>=24.3.1,<25.0.0",
-    "setuptools>=61.0",
+    "psycopg",
+    "psycopg2-binary",
+    "pytest-cov",
+    "pytest>=8",
+    "ruff",
     "setuptools-scm>=8",
+    "setuptools>=61.0",
+    "wheel",
 ]
 docs = [
     "Sphinx>=7.1.0,<8.0.0",
