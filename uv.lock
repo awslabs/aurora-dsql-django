@@ -34,46 +34,49 @@ dependencies = [
     { name = "aurora-dsql-python-connector" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
-    { name = "docutils" },
-    { name = "flake8" },
-    { name = "guzzle-sphinx-theme" },
-    { name = "pip" },
-    { name = "ruff" },
-    { name = "setuptools" },
-    { name = "setuptools-scm" },
-    { name = "sphinx" },
-]
-test = [
     { name = "django", version = "5.2.10", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "flake8" },
+    { name = "pip" },
     { name = "psycopg" },
     { name = "psycopg2-binary" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "ruff" },
+    { name = "setuptools" },
+    { name = "setuptools-scm" },
     { name = "wheel" },
+]
+docs = [
+    { name = "docutils" },
+    { name = "guzzle-sphinx-theme" },
+    { name = "sphinx" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "aurora-dsql-python-connector", specifier = ">=0.1.0" },
-    { name = "django", marker = "extra == 'test'", specifier = ">=4.2" },
-    { name = "docutils", marker = "extra == 'dev'", specifier = ">=0.18.0,<0.21.0" },
-    { name = "flake8", marker = "extra == 'dev'" },
-    { name = "guzzle-sphinx-theme", marker = "extra == 'dev'", specifier = "~=0.7.11" },
-    { name = "pip", marker = "extra == 'dev'", specifier = ">=24.3.1,<25.0.0" },
-    { name = "psycopg", marker = "extra == 'test'" },
-    { name = "psycopg2-binary", marker = "extra == 'test'" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
-    { name = "pytest-cov", marker = "extra == 'test'" },
-    { name = "ruff", marker = "extra == 'dev'" },
-    { name = "setuptools", marker = "extra == 'dev'", specifier = ">=61.0" },
-    { name = "setuptools-scm", marker = "extra == 'dev'", specifier = ">=8" },
-    { name = "sphinx", marker = "extra == 'dev'", specifier = ">=7.1.0,<8.0.0" },
-    { name = "wheel", marker = "extra == 'test'" },
+requires-dist = [{ name = "aurora-dsql-python-connector", specifier = ">=0.1.0" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "django", specifier = ">=4.2" },
+    { name = "flake8" },
+    { name = "pip", specifier = ">=24.3.1,<25.0.0" },
+    { name = "psycopg" },
+    { name = "psycopg2-binary" },
+    { name = "pytest", specifier = ">=8" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+    { name = "setuptools", specifier = ">=61.0" },
+    { name = "setuptools-scm", specifier = ">=8" },
+    { name = "wheel" },
 ]
-provides-extras = ["test", "dev"]
+docs = [
+    { name = "docutils", specifier = ">=0.18.0,<0.21.0" },
+    { name = "guzzle-sphinx-theme", specifier = "~=0.7.11" },
+    { name = "sphinx", specifier = ">=7.1.0,<8.0.0" },
+]
 
 [[package]]
 name = "aurora-dsql-python-connector"

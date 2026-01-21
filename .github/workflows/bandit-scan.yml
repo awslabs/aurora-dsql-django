@@ -30,7 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --extra test --extra dev
+        uv sync
 
     - name: Run Bandit
       run: |
